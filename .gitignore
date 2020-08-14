@@ -1,0 +1,15 @@
+# virtual environment
+venv/
+# secrets
+.env
+# VSCode
+.vscode/
+local_settings.py 
+#gen
+*.pyc
+*~
+__pycache__
+venv
+db.sqlite3
+/static
+.DS_Store
