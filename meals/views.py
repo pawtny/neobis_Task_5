@@ -97,3 +97,9 @@ class CategoriesByDepartmentView(APIView):
         categories = MealCategory.objects.filter(departmentid = self.kwargs['pk'])
         serializer = DepartmentSerializer(categories, many = True)
         return Response(serializer.data)
+
+class MealsByCategoryView(APIView):
+    def get(self, request, pk, format = None):
+        meals = Meal.objects.filter(categoryid = self.kwargs['pk'])
+        serializer = MealSerializer(meals, many = True)
+        return Response(serializer.data)

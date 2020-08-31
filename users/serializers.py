@@ -28,14 +28,15 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=255,)
+    username = serializers.CharField(max_length=255, write_only=True)
     password = serializers.CharField(max_length=128, write_only=True, style = {'input_type': 'password'})
+    roleid = serializers.IntegerField(source='roleid.id', read_only=True)
     token = serializers.CharField(max_length=255, read_only=True)
-    roleid = serializers.IntegerField(read_only=True)
 
     def validate(self, data):
         username = data.get('username', None)
         password = data.get('password', None)
+        
 
         if username is None:
             raise serializers.ValidationError(
@@ -60,7 +61,7 @@ class LoginSerializer(serializers.Serializer):
             )
 
         return {
-            'username': user.username,
+            'roleid': user.roleid,
             'token': user.token
         }
 
