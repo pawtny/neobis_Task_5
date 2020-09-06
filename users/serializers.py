@@ -65,6 +65,14 @@ class LoginSerializer(serializers.Serializer):
             'token': user.token
         }
 
+class ChangePasswordSerializer(serializers.Serializer):
+    oldpassword = serializers.CharField(max_length=255)
+    newpassword = serializers.CharField(max_length=128)
+    class Meta:
+        model = User
+        fields = ('oldpassword', 'newpassword')
+        
+
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         max_length=128,
@@ -74,7 +82,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('name', 'surname', 'username', 'password', 'email', 'roleid', 'dateofadd', 'phone', 'token',)
+        fields = ('id', 'name', 'surname', 'username', 'password', 'email', 'roleid', 'dateofadd', 'phone', 'token',)
 
         read_only_fields = ('token',)
 

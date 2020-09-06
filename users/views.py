@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -8,7 +8,7 @@ from .renderers import UserJSONRenderer
 
 from .models import User, Role
 from .serializers import (
-    LoginSerializer, RegistrationSerializer, UserSerializer, RoleSerializer
+    LoginSerializer, RegistrationSerializer, UserSerializer, RoleSerializer, ChangePasswordSerializer
 )
 
 class UserRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
@@ -90,3 +90,16 @@ class RoleDetails(APIView):
         role.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+class ChangePasswordView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def post(self, request, format = None):
+        serializer = ChangePasswordSerializer(data=request.data)
+        user = request.user
+        if serializer.is_valid():
+            if user.check_password(serializer.data['oldpassword']):
+                user.set_password(serializer.data['newpassword'])
+                user.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
