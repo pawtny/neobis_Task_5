@@ -66,18 +66,18 @@ class CheckMealSerializer(serializers.ModelSerializer):
     amount = serializers.ReadOnlyField(source='orderid.count')
     price = serializers.ReadOnlyField(source='orderid.mealsid.price')
     total = serializers.ReadOnlyField(source='orderid.getSum')
-    test = "test"
+
     class Meta:
         model = OneMealToOrder
-        fields = ['name', 'amount', 'price', 'total', 'test']
+        fields = ['name', 'amount', 'price', 'total']
 
 
 class CheckSerializer(serializers.ModelSerializer):
-    meals = OneMealToOrderSerializer(many = True, read_only=True)
+    meal = OneMealToOrderSerializer(many = True, read_only=True, source='orderid__meals')
 
     class Meta:
         model = Check
-        fields = ['id', 'orderid', 'date', 'meals']
+        fields = ['id', 'orderid', 'date', 'meal', 'totalSum']
 
 
 

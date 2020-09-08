@@ -2,9 +2,10 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, generics, permissions
-from .models import Table, ServicePercentage, Status, Order, Check
+from .models import Table, ServicePercentage, Status, Order, Check, OneMealToOrder
+from meals.models import Meal
 from .serializers import (TableSerializer, ServicePercentageSerializer, StatusSerializer, 
-                            OrderSerializer, MealsToOrderSerializer, CheckSerializer)
+                            OrderSerializer, MealsToOrderSerializer, CheckSerializer, OneMealToOrderSerializer)
 
 class TableList(APIView):
     def get(self, request, format = None):
@@ -139,7 +140,23 @@ class ChecksList(APIView):
     def get(self, request, format = None):
         checks = Check.objects.all()
         serializer = CheckSerializer(checks, many = True)
-        return Response(serializer.data)
+        data = serializer.data
+        for item in data:
+            orderid = item['orderid']
+            meals = OneMealToOrderSerializer(OneMealToOrder.objects.filter(orderid=orderid), many=True)
+            tmp = []
+            total_sum = 0
+            for meal in meals.data:
+                m = Meal.objects.get(id=meal['mealid'])
+                tmp.append({
+                    'name': m.name,
+                    'amount': meal['count'],
+                    'price': m.price,
+                    'total': meal['count'] * m.price
+                })
+                total_sum += meal['count'] * m.price
+            item.update({'total_sum': total_sum, 'meals': tmp})
+        return Response(data)
     
     def post(self, request, format = None):
         serializer = CheckSerializer(data=request.data)

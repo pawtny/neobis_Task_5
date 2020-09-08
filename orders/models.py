@@ -25,11 +25,13 @@ class OneMealToOrder(models.Model):
     count = models.PositiveSmallIntegerField()
 
     def getSum(self):
-        return count * Meal.objects.get(id=self.mealid).price
+        return self.count * Meal.objects.get(id=self.mealid.id).price
 
 class Check(models.Model):
-    orderid = models.OneToOneField(Order, related_name='checks', on_delete=models.CASCADE)
+    orderid = models.ForeignKey(Order, related_name='checks', on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
     # servicefee = models.ForeignKey(ServicePercentage, on_delete=models.CASCADE)
 
+    def totalSum(self):
+        return sum([e.getSum() for e in OneMealToOrder.objects.filter(orderid=self.orderid)])
 
