@@ -8,8 +8,15 @@ from .renderers import UserJSONRenderer
 
 from .models import User, Role
 from .serializers import (
-    LoginSerializer, RegistrationSerializer, UserSerializer, RoleSerializer, ChangePasswordSerializer
+    LoginSerializer, RegistrationSerializer, UserSerializer, RoleSerializer, ChangePasswordSerializer, MyTokenObtainPairSerializer
 )
+
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
+
 
 class UserRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated,)

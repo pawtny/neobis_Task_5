@@ -17,6 +17,7 @@ class DepartmentList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class DepartmentDetails(APIView):
     def get_object(self, pk):
         try:
@@ -28,6 +29,7 @@ class DepartmentDetails(APIView):
         department = self.get_object(pk)
         department.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class MealCategoryList(APIView):
     def get(self, request, format = None):
@@ -42,6 +44,7 @@ class MealCategoryList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class MealCategoryDetails(APIView):
     def get_object(self, pk):
         try:
@@ -53,6 +56,7 @@ class MealCategoryDetails(APIView):
         mealcategory = self.get_object(pk)
         mealcategory.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class MealList(APIView):
     def get(self, request, format = None):
@@ -66,6 +70,7 @@ class MealList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class MealDetails(APIView):
     def get_object(self, pk):
@@ -92,11 +97,13 @@ class MealDetails(APIView):
         meal.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 class CategoriesByDepartmentView(APIView):
     def get(self, request, pk, format = None):
         categories = MealCategory.objects.filter(departmentid = self.kwargs['pk'])
         serializer = DepartmentSerializer(categories, many = True)
         return Response(serializer.data)
+
 
 class MealsByCategoryView(APIView):
     def get(self, request, pk, format = None):

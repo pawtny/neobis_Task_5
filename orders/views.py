@@ -20,6 +20,7 @@ class TableList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class TableDetails(APIView):
     def get_object(self, pk):
         try:
@@ -45,6 +46,7 @@ class StatusList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class StatusDetails(APIView):
     def get_object(self, pk):
@@ -72,6 +74,7 @@ class ServicePercentageList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class ServicePercentageDetails(APIView):
     def get_object(self, pk):
         try:
@@ -83,6 +86,7 @@ class ServicePercentageDetails(APIView):
         servicepercentage = self.get_object(pk)
         servicepercentage.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class OrderList(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -99,6 +103,7 @@ class OrderList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class OrderDetails(APIView):
     def get_object(self, pk):
         try:
@@ -111,6 +116,7 @@ class OrderDetails(APIView):
         order.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 class ActiveOrdersView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
@@ -118,6 +124,7 @@ class ActiveOrdersView(APIView):
         orders = Order.objects.filter(isitopen=True)
         serializer = OrderSerializer(orders, many = True)
         return Response(serializer.data)
+
 
 class MealsToOrderView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -134,6 +141,18 @@ class MealsToOrderView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def get_object(self, pk):
+        try:
+            return OneMealToOrder.objects.get(pk=pk)
+        except OneMealToOrder.DoesNotExist:
+            raise status.HTTP_404_NOT_FOUND
+
+    def delete(self, request, pk, format=None):
+        oneMeal = self.get_object(pk)
+        oneMeal.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class ChecksList(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
@@ -145,7 +164,6 @@ class ChecksList(APIView):
             orderid = item['orderid']
             meals = OneMealToOrderSerializer(OneMealToOrder.objects.filter(orderid=orderid), many=True)
             tmp = []
-            total_sum = 0
             for meal in meals.data:
                 m = Meal.objects.get(id=meal['mealid'])
                 tmp.append({
@@ -154,8 +172,7 @@ class ChecksList(APIView):
                     'price': m.price,
                     'total': meal['count'] * m.price
                 })
-                total_sum += meal['count'] * m.price
-            item.update({'total_sum': total_sum, 'meals': tmp})
+            item.update({'meals': tmp})
         return Response(data)
     
     def post(self, request, format = None):

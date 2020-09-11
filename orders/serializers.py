@@ -2,29 +2,34 @@ from rest_framework import serializers
 from .models import Table, ServicePercentage, Status, Order, OneMealToOrder, Check
 from meals.models import Meal
 
+
 class TableSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Table
         fields = "__all__"
     
+
 class ServicePercentageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ServicePercentage
         fields = "__all__"
     
+
 class StatusSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Status
         fields = "__all__"
 
+
 class OneMealToOrderSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = OneMealToOrder
         fields = ['mealid', 'count']
+
 
 class OrderSerializer(serializers.ModelSerializer):
     waiterid = serializers.ReadOnlyField(source='waiterid.id')
@@ -44,6 +49,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
         return order
 
+
 class MealsToOrderSerializer(serializers.Serializer):
     orderid = serializers.IntegerField(write_only=True)
     meals = OneMealToOrderSerializer(many = True)
@@ -58,18 +64,6 @@ class MealsToOrderSerializer(serializers.Serializer):
         for meal_data in meals_data:
             OneMealToOrder.objects.create(orderid=order, **meal_data)
         return order
-
-
-
-class CheckMealSerializer(serializers.ModelSerializer):
-    name = serializers.ReadOnlyField(source='orderid.mealsid.name')
-    amount = serializers.ReadOnlyField(source='orderid.count')
-    price = serializers.ReadOnlyField(source='orderid.mealsid.price')
-    total = serializers.ReadOnlyField(source='orderid.getSum')
-
-    class Meta:
-        model = OneMealToOrder
-        fields = ['name', 'amount', 'price', 'total']
 
 
 class CheckSerializer(serializers.ModelSerializer):
