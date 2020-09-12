@@ -89,7 +89,6 @@ class ServicePercentageDetails(APIView):
 
 
 class OrderList(APIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get(self, request, format = None):
         orders = Order.objects.all()
@@ -118,7 +117,6 @@ class OrderDetails(APIView):
 
 
 class ActiveOrdersView(APIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get(self, request, format = None):
         orders = Order.objects.filter(isitopen=True)
@@ -127,7 +125,6 @@ class ActiveOrdersView(APIView):
 
 
 class MealsToOrderView(APIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get(self, request, pk, format = None):
         orders = Order.objects.filter(id = self.kwargs['pk'])
@@ -154,7 +151,6 @@ class MealsToOrderView(APIView):
 
 
 class ChecksList(APIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get(self, request, format = None):
         checks = Check.objects.all()

@@ -78,26 +78,3 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['name', 'surname', 'email', 'roleid', 'phone']
 
     objects = UserManager()
-
-    def __str__(self):
-        return self.username
-
-    @property
-    def token(self):
-        return self._generate_jwt_token()
-
-    def get_full_name(self):
-        return self.name + " " + self.surname
-
-    def get_short_name(self):
-        return self.name
-
-    def _generate_jwt_token(self):
-        dt = datetime.now() + timedelta(days=30)
-
-        token = jwt.encode({
-            'id': self.pk,
-            'exp': dt.utcfromtimestamp(dt.timestamp())
-        }, settings.SECRET_KEY, algorithm='HS256')
-
-        return token.decode('utf-8')
